@@ -1,18 +1,16 @@
 {
   "name": "my-static-site",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint:html": "htmlhint **/*.html",
+    "lint:css": "stylelint **/*.css",
+    "build": "parcel build index.html --dist-dir dist",
+    "test": "npm run lint:html && npm run lint:css"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "htmlhint": "^1.8.0",
-    "parcel": "^2.16.3",
-    "stylelint": "^16.26.1",
-    "stylelint-config-standard": "^39.0.1"
+    "htmlhint": "^1.1.4",
+    "stylelint": "^15.10.3",
+    "stylelint-config-standard": "^33.0.0",
+    "parcel": "^2.10.3"
   }
 }
