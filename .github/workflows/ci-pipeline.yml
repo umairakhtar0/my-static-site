@@ -9,23 +9,40 @@ on:
 jobs:
   lint-and-build:
     runs-on: ubuntu-latest
+    
     steps:
+      # 1. Checkout the code from GitHub
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 2. Set up Node.js environment
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
 
+      # 3. Install dependencies (WITH htmlhint explicitly)
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm ci
+          npm install htmlhint stylelint stylelint-config-standard parcel --save-dev
 
+      # 4. Verify installations
+      - name: Verify Tools
+        run: |
+          npx htmlhint --version
+          npx stylelint --version
+          npx parcel --version
+
+      # 5. Run HTMLHint (FIXED COMMAND)
       - name: Run HTMLHint
         run: npx htmlhint "**/*.html"
 
+      # 6. Run Stylelint
       - name: Run Stylelint
         run: npx stylelint "**/*.css"
 
+      # 7. Build with Parcel
       - name: Build Project
         run: npx parcel build index.html --dist-dir dist
