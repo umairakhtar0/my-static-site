@@ -1,3 +1,12 @@
+# 1. Install packages locally (to get package-lock.json)
+npm install htmlhint stylelint stylelint-config-standard parcel --save-dev
+
+# 2. Add npm ci to package.json scripts
+# Add this to package.json:
+# "ci": "npm ci && npm run test && npm run build"
+
+# 3. Create new workflow with this content
+cat > .github/workflows/ci-pipeline.yml << 'EOF'
 name: Static Web App CI
 
 on:
@@ -9,40 +18,28 @@ on:
 jobs:
   lint-and-build:
     runs-on: ubuntu-latest
-    
     steps:
-      # 1. Checkout the code from GitHub
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      # 2. Set up Node.js environment
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
-
-      # 3. Install dependencies (WITH htmlhint explicitly)
-      - name: Install Dependencies
-        run: |
-          npm ci
-          npm install htmlhint stylelint stylelint-config-standard parcel --save-dev
-
-      # 4. Verify installations
-      - name: Verify Tools
-        run: |
-          npx htmlhint --version
-          npx stylelint --version
-          npx parcel --version
-
-      # 5. Run HTMLHint (FIXED COMMAND)
-      - name: Run HTMLHint
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Lint HTML
         run: npx htmlhint "**/*.html"
-
-      # 6. Run Stylelint
-      - name: Run Stylelint
+      
+      - name: Lint CSS
         run: npx stylelint "**/*.css"
-
-      # 7. Build with Parcel
-      - name: Build Project
+      
+      - name: Build
         run: npx parcel build index.html --dist-dir dist
+EOF
+
+# 4. Commit and push
+git add .
+git commit -m "Fix: Use npm ci and ensure htmlhint is in node_modules"
+git push origin main
